@@ -63,15 +63,15 @@ reprojError(const Vector3d& f1,
 }
 
 double
-computeInliers(const vector<Vector3d>& features1, // c1
-               const vector<Vector3d>& features2, // c2
+computeInliers(const std::vector<Vector3d>& features1, // c1
+               const std::vector<Vector3d>& features2, // c2
                const Matrix3d& R,                 // R_c1_c2
                const Vector3d& t,                 // c1_t
                const double reproj_thresh,
                double error_multiplier2,
-               vector<Vector3d>& xyz_vec,         // in frame c1
-               vector<int>& inliers,
-               vector<int>& outliers)
+               std::vector<Vector3d>& xyz_vec,         // in frame c1
+               std::vector<int>& inliers,
+               std::vector<int>& outliers)
 {
   inliers.clear(); inliers.reserve(features1.size());
   outliers.clear(); outliers.reserve(features1.size());
@@ -95,14 +95,14 @@ computeInliers(const vector<Vector3d>& features1, // c1
 }
 
 void
-computeInliersOneView(const vector<Vector3d> & feature_sphere_vec,
-                      const vector<Vector3d> & xyz_vec,
+computeInliersOneView(const std::vector<Vector3d> & feature_sphere_vec,
+                      const std::vector<Vector3d> & xyz_vec,
                       const Matrix3d &R,
                       const Vector3d &t,
                       const double reproj_thresh,
                       const double error_multiplier2,
-                      vector<int>& inliers,
-                      vector<int>& outliers)
+                      std::vector<int>& inliers,
+                      std::vector<int>& outliers)
 {
   inliers.clear(); inliers.reserve(xyz_vec.size());
   outliers.clear(); outliers.reserve(xyz_vec.size());

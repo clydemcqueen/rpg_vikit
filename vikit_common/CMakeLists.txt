@@ -1,10 +1,10 @@
 SET(PROJECT_NAME vikit_common)
+CMAKE_MINIMUM_REQUIRED (VERSION 3.14)
 PROJECT(${PROJECT_NAME})
-CMAKE_MINIMUM_REQUIRED (VERSION 2.8.3)
 SET(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
 SET(CMAKE_VERBOSE_MAKEFILE OFF)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
-SET(USE_ROS TRUE) # Set False if you want to build this package without Catkin
+SET(USE_ROS FALSE) # Set False if you want to build this package without Catkin
 
 # Set build flags. Set IS_ARM on odroid board as environment variable
 SET(CMAKE_CXX_FLAGS "-Wall -D_LINUX -D_REENTRANT -march=native -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
@@ -30,7 +30,6 @@ INCLUDE_DIRECTORIES(
   include
   ${Eigen_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
-  ${Sophus_INCLUDE_DIRS}
 )
 
 IF(USE_ROS)
@@ -63,7 +62,7 @@ LIST(APPEND SOURCEFILES src/atan_camera.cpp
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCEFILES})
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
   ${OpenCV_LIBS}
-  ${Sophus_LIBRARIES}
+  Sophus::Sophus
   ${catkin_LIBRARIES})
 
 IF(USE_ROS)
@@ -80,10 +79,12 @@ TARGET_LINK_LIBRARIES(test_vk_common_triangulation ${PROJECT_NAME})
 ADD_EXECUTABLE(test_vk_common_patch_score test/test_patch_score.cpp)
 TARGET_LINK_LIBRARIES(test_vk_common_patch_score ${PROJECT_NAME})
 
-
 ################################################################################
 # Create the vikit_commonConfig.cmake file for other cmake projects.
 IF(NOT USE_ROS)
+  # Temporary hack:
+  cmake_policy(SET CMP0026 OLD)
+
   GET_TARGET_PROPERTY( FULL_LIBRARY_NAME ${PROJECT_NAME} LOCATION )
   SET(vikit_common_LIBRARIES ${FULL_LIBRARY_NAME} )
   SET(vikit_common_LIBRARY_DIR ${PROJECT_BINARY_DIR} )

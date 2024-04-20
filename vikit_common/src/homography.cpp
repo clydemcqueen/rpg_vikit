@@ -16,8 +16,8 @@
 namespace vk {
 
 Homography::
-Homography(const vector<Vector2d, aligned_allocator<Vector2d> >& _fts1,
-           const vector<Vector2d, aligned_allocator<Vector2d> >& _fts2,
+Homography(const std::vector<Vector2d, aligned_allocator<Vector2d> >& _fts1,
+           const std::vector<Vector2d, aligned_allocator<Vector2d> >& _fts2,
            double _error_multiplier2,
            double _thresh_in_px) :
    thresh(_thresh_in_px),
@@ -31,13 +31,13 @@ void Homography::
 calcFromPlaneParams(const Vector3d& n_c1, const Vector3d& xyz_c1)
 {
   double d = n_c1.dot(xyz_c1); // normal distance from plane to KF
-  H_c2_from_c1 = T_c2_from_c1.rotation_matrix() + (T_c2_from_c1.translation()*n_c1.transpose())/d;
+  H_c2_from_c1 = T_c2_from_c1.rotationMatrix() + (T_c2_from_c1.translation()*n_c1.transpose())/d;
 }
 
 void Homography::
 calcFromMatches()
 {
-  vector<cv::Point2f> src_pts(fts_c1.size()), dst_pts(fts_c1.size());
+  std::vector<cv::Point2f> src_pts(fts_c1.size()), dst_pts(fts_c1.size());
   for(size_t i=0; i<fts_c1.size(); ++i)
   {
     src_pts[i] = cv::Point2f(fts_c1[i][0], fts_c1[i][1]);
@@ -45,7 +45,7 @@ calcFromMatches()
   }
 
   // TODO: replace this function to remove dependency from opencv!
-  cv::Mat cvH = cv::findHomography(src_pts, dst_pts, CV_RANSAC, 2./error_multiplier2);
+  cv::Mat cvH = cv::findHomography(src_pts, dst_pts, cv::RANSAC, 2./error_multiplier2);
   H_c2_from_c1(0,0) = cvH.at<double>(0,0);
   H_c2_from_c1(0,1) = cvH.at<double>(0,1);
   H_c2_from_c1(0,2) = cvH.at<double>(0,2);
@@ -195,7 +195,7 @@ decompose()
   {
     Matrix3d R = s * U * decompositions[i].R * V.transpose();
     Vector3d t = U * decompositions[i].t;
-    decompositions[i].T = Sophus::SE3(R, t);
+    decompositions[i].T = Sophus::SE3d(R, t);
   }
   return true;
 }
@@ -259,8 +259,8 @@ findBestDecomposition()
     double adSampsonusScores[2];
     for(size_t i=0; i<2; i++)
     {
-      Sophus::SE3 T = decompositions[i].T;
-      Matrix3d Essential = T.rotation_matrix() * sqew(T.translation());
+      Sophus::SE3d T = decompositions[i].T;
+      Matrix3d Essential = T.rotationMatrix() * sqew(T.translation());
       double dSumError = 0;
       for(size_t m=0; m < fts_c1.size(); m++ )
       {

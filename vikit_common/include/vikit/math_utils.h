@@ -11,7 +11,7 @@
 
 #include <Eigen/Core>
 #include <Eigen/StdVector>
-#include <sophus/se3.h>
+#include <sophus/se3.hpp>
 
 namespace vk
 {
@@ -42,25 +42,25 @@ double reprojError(
     double error_multiplier2);
 
 double computeInliers(
-    const vector<Vector3d>& features1,
-    const vector<Vector3d>& features2,
+    const std::vector<Vector3d>& features1,
+    const std::vector<Vector3d>& features2,
     const Matrix3d& R,
     const Vector3d& t,
     const double reproj_thresh,
     double error_multiplier2,
-    vector<Vector3d>& xyz_vec,
-    vector<int>& inliers,
-    vector<int>& outliers);
+    std::vector<Vector3d>& xyz_vec,
+    std::vector<int>& inliers,
+    std::vector<int>& outliers);
 
 void computeInliersOneView(
-    const vector<Vector3d> & feature_sphere_vec,
-    const vector<Vector3d> & xyz_vec,
+    const std::vector<Vector3d> & feature_sphere_vec,
+    const std::vector<Vector3d> & xyz_vec,
     const Matrix3d &R,
     const Vector3d &t,
     const double reproj_thresh,
     const double error_multiplier2,
-    vector<int>& inliers,
-    vector<int>& outliers);
+    std::vector<int>& inliers,
+    std::vector<int>& outliers);
 
 //! Direct Cosine Matrix to Roll Pitch Yaw
 Vector3d dcm2rpy(const Matrix3d &R);
@@ -125,7 +125,7 @@ template<class T>
 T getMedian(vector<T>& data_vec)
 {
   assert(!data_vec.empty());
-  typename vector<T>::iterator it = data_vec.begin()+floor(data_vec.size()/2);
+  typename std::vector<T>::iterator it = data_vec.begin()+floor(data_vec.size()/2);
   nth_element(data_vec.begin(), it, data_vec.end());
   return *it;
 }
@@ -144,7 +144,7 @@ inline Vector2d pyrFromZero_2d(const Vector2d& uv_0, int level)
 inline void
 frameJac_xyz2uv(const Vector3d & xyz,
                  const double & focal_length,
-                 Matrix<double,2,6> & frame_jac)
+                 Eigen::Matrix<double,2,6> & frame_jac)
 {
   const double x = xyz[0];
   const double y = xyz[1];

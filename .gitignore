@@ -1,1 +1,6 @@
 vikit_py/build
+vikit_common/build
+vikit_common/bin
+vikit_common/lib
+cmake-build-debug
+.idea
