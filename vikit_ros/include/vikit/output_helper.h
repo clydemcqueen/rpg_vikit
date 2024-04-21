@@ -9,89 +9,87 @@
 #define VIKIT_OUTPUT_HELPER_H_
 
 #include <string>
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <Eigen/Core>
-#include <sophus/se3.h>
-#include <tf/transform_broadcaster.h>
+#include <sophus/se3.hpp>
+#include <tf2_ros/transform_broadcaster.h>
+#include <visualization_msgs/msg/marker.hpp>
 
-namespace vk {
-namespace output_helper {
+namespace vk::output_helper {
 
-using namespace std;
-using namespace Eigen;
+using namespace std;        // TODO remove
+using namespace Eigen;      // TODO remove
 
 void
-publishTfTransform      (const Sophus::SE3& T, const ros::Time& stamp,
+publishTfTransform      (const Sophus::SE3d& T, const rclcpp::Time& stamp,
                          const string& frame_id, const string& child_frame_id,
-                         tf::TransformBroadcaster& br);
+                         tf2_ros::TransformBroadcaster& br);
 
 void
-publishPointMarker      (ros::Publisher pub,
+publishPointMarker      (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
                          const Vector3d& pos,
                          const string& ns,
-                         const ros::Time& timestamp,
+                         const rclcpp::Time& timestamp,
                          int id,
                          int action,
                          double marker_scale,
                          const Vector3d& color,
-                         ros::Duration lifetime = ros::Duration(0.0));
+                         const rclcpp::Duration& lifetime = std::chrono::nanoseconds::zero());
 
 void
-publishLineMarker       (ros::Publisher pub,
+publishLineMarker       (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
                          const Vector3d& start,
                          const Vector3d& end,
                          const string& ns,
-                         const ros::Time& timestamp,
+                         const rclcpp::Time& timestamp,
                          int id,
                          int action,
                          double marker_scale,
                          const Vector3d& color,
-                         ros::Duration lifetime = ros::Duration(0.0));
+                         const rclcpp::Duration& lifetime = std::chrono::nanoseconds::zero());
 
 void
-publishArrowMarker      (ros::Publisher pub,
+publishArrowMarker      (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
                          const Vector3d& pos,
                          const Vector3d& dir,
                          double scale,
                          const string& ns,
-                         const ros::Time& timestamp,
+                         const rclcpp::Time& timestamp,
                          int id,
                          int action,
                          double marker_scale,
                          const Vector3d& color);
 
 void
-publishHexacopterMarker (ros::Publisher pub,
+publishHexacopterMarker (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
                          const string& frame_id,
                          const string& ns,
-                         const ros::Time& timestamp,
+                         const rclcpp::Time& timestamp,
                          int id,
                          int action,
                          double marker_scale,
                          const Vector3d& color);
 
 void
-publishCameraMarker(ros::Publisher pub,
+publishCameraMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
                     const string& frame_id,
                     const string& ns,
-                    const ros::Time& timestamp,
+                    const rclcpp::Time& timestamp,
                     int id,
                     double marker_scale,
                     const Vector3d& color);
 void
-publishFrameMarker     (ros::Publisher pub,
+publishFrameMarker     (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
                         const Matrix3d& rot,
                         const Vector3d& pos,
                         const string& ns,
-                        const ros::Time& timestamp,
+                        const rclcpp::Time& timestamp,
                         int id,
                         int action,
                         double marker_scale,
-                        ros::Duration lifetime = ros::Duration(0.0));
+                        const rclcpp::Duration& lifetime = std::chrono::nanoseconds::zero());
 
 
-} // namespace output_helper
-} // namespace vk
-
+} // namespace vk::output_helper
 
 #endif /* VIKIT_OUTPUT_HELPER_H_ */

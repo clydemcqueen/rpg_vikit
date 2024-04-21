@@ -4,7 +4,7 @@ project(${PROJECT_NAME})
 set(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
-set(USE_ROS FALSE) # Set False if you want to build this package without Catkin
+set(USE_ROS TRUE) # Set False if you want to build this package without Catkin
 
 # Set build flags. Set IS_ARM on odroid board as environment variable
 set(CMAKE_CXX_FLAGS "-Wall -D_LINUX -D_REENTRANT -march=native -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
@@ -15,21 +15,15 @@ else()
 endif()
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops")
 
+find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(Eigen REQUIRED)
 find_package(Sophus REQUIRED)
 
 include_directories(include)
 
 if(USE_ROS)
-  FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp cmake_modules)
-  LIST(APPEND INCLUDE_DIRECTORIES ${catkin_INCLUDE_DIRS})
-  catkin_package(
-    DEPENDS Eigen OpenCV Sophus
-    CATKIN_DEPENDS roscpp
-    INCLUDE_DIRS include
-    LIBRARIES ${PROJECT_NAME}
-  )
+  find_package(ament_cmake REQUIRED)
+  find_package(rclcpp REQUIRED)
 else()
   SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
   SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
@@ -49,13 +43,9 @@ add_library(${PROJECT_NAME} SHARED
   src/img_align.cpp)
 
 target_link_libraries(${PROJECT_NAME}
-  ${OpenCV_LIBS}
   Eigen3::Eigen
+  ${OpenCV_LIBS}
   Sophus::Sophus)
-
-IF(USE_ROS)
-  TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${catkin_LIBRARIES})
-ENDIF()
 
 # Tests
 add_executable(test_vk_common_camera test/test_camera.cpp)
@@ -69,7 +59,9 @@ target_link_libraries(test_vk_common_patch_score ${PROJECT_NAME})
 
 ################################################################################
 # Create the vikit_commonConfig.cmake file for other cmake projects.
-if(NOT USE_ROS)
+if(USE_ROS)
+  ament_package()
+else()
   # Temporary hack:
   cmake_policy(SET CMP0026 OLD)
 

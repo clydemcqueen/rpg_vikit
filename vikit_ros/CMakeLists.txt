@@ -1,52 +1,27 @@
-SET(PROJECT_NAME vikit_ros)
-PROJECT(${PROJECT_NAME})
-CMAKE_MINIMUM_REQUIRED (VERSION 2.8.3)
-SET(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
-SET(CMAKE_VERBOSE_MAKEFILE OFF)
+set(PROJECT_NAME vikit_ros)
+cmake_minimum_required (VERSION 3.14)
+project(${PROJECT_NAME})
+set(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 # Set build flags
-SET(CMAKE_CXX_FLAGS "-Wall -D_LINUX -D_REENTRANT -march=native -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
-SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g")
-IF(CMAKE_COMPILER_IS_GNUCC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-ELSE()
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-ENDIF()
+set(CMAKE_CXX_FLAGS "-Wall -D_LINUX -D_REENTRANT -march=native -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -O0 -g")
 
-# Add catkin and required ROS packages
-FIND_PACKAGE(catkin REQUIRED COMPONENTS roscpp vikit_common visualization_msgs tf cmake_modules)
+find_package(ament_cmake_auto REQUIRED)
+ament_auto_find_build_dependencies()
 
-# Add plain cmake packages 
-FIND_PACKAGE(OpenCV REQUIRED)
-FIND_PACKAGE(Eigen REQUIRED)
-FIND_PACKAGE(Sophus REQUIRED)
-
-# Include dirs
-INCLUDE_DIRECTORIES(
-  include
-  ${Eigen_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
-  ${Sophus_INCLUDE_DIRS}
-  ${catkin_INCLUDE_DIRS}
-)
-
-# Describe catkin Project
-catkin_package(
-    DEPENDS Eigen OpenCV Sophus vikit_common
-    CATKIN_DEPENDS roscpp visualization_msgs tf 
-    INCLUDE_DIRS include
-    LIBRARIES ${PROJECT_NAME}
-)
-
-# Set Sourcefiles
-LIST(APPEND SOURCEFILES 
-  src/output_helper.cpp
-)
+find_package(Eigen3 REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Sophus REQUIRED)
 
 # Create vikit library
-ADD_LIBRARY(${PROJECT_NAME} SHARED ${SOURCEFILES})
-TARGET_LINK_LIBRARIES(
-  ${PROJECT_NAME}
+ament_auto_add_library(${PROJECT_NAME} SHARED
+  src/output_helper.cpp)
+
+target_link_libraries(${PROJECT_NAME}
+  Eigen3::Eigen
   ${OpenCV_LIBS}
-  ${Sophus_LIBRARIES}
-  ${catkin_LIBRARIES})
+  Sophus::Sophus)
+
+ament_auto_package()
