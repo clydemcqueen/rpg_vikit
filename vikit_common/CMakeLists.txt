@@ -1,9 +1,7 @@
 set(PROJECT_NAME vikit_common)
 cmake_minimum_required (VERSION 3.14)
 project(${PROJECT_NAME})
-set(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
-set(CMAKE_VERBOSE_MAKEFILE OFF)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
+set(CMAKE_BUILD_TYPE RelWithDebInfo) # Release, RelWithDebInfo, Debug
 set(USE_ROS TRUE) # Set False if you want to build this package without Catkin
 
 # Set build flags. Set IS_ARM on odroid board as environment variable
@@ -42,10 +40,16 @@ add_library(${PROJECT_NAME} SHARED
   src/homography.cpp
   src/img_align.cpp)
 
+if(USE_ROS)
+  # Modern CMake target
+  add_library(vikit_common::vikit_common ALIAS vikit_common)
+endif()
+
 target_link_libraries(${PROJECT_NAME}
-  Eigen3::Eigen
-  ${OpenCV_LIBS}
-  Sophus::Sophus)
+  PUBLIC
+    Eigen3::Eigen
+    ${OpenCV_LIBS}
+    Sophus::Sophus)
 
 # Tests
 add_executable(test_vk_common_camera test/test_camera.cpp)
@@ -60,6 +64,10 @@ target_link_libraries(test_vk_common_patch_score ${PROJECT_NAME})
 ################################################################################
 # Create the vikit_commonConfig.cmake file for other cmake projects.
 if(USE_ROS)
+  install(TARGETS ${PROJECT_NAME} EXPORT vikit_common_targets INCLUDES DESTINATION include)
+  install(DIRECTORY include/ DESTINATION include)  # Note trailing /
+  ament_export_targets(vikit_common_targets)
+  ament_export_dependencies(rclcpp)
   ament_package()
 else()
   # Temporary hack:

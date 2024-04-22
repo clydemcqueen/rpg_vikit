@@ -9,58 +9,68 @@
 #define VIKIT_CAMERA_LOADER_H_
 
 #include <string>
+#include <rclcpp/rclcpp.hpp>
 #include <vikit/abstract_camera.h>
 #include <vikit/pinhole_camera.h>
 #include <vikit/atan_camera.h>
 #include <vikit/omni_camera.h>
-#include <vikit/params_helper.h>
 
-namespace vk {
-namespace camera_loader {
+namespace vk::camera_loader {
 
-/// Load from ROS Namespace
-bool loadFromRosNs(const std::string& ns, vk::AbstractCamera*& cam)
+bool loadFromRosNode(const std::shared_ptr<rclcpp::Node>& node, vk::AbstractCamera*& cam)
 {
   bool res = true;
-  std::string cam_model(getParam<std::string>(ns+"/cam_model"));
+
+  auto cam_model = node->declare_parameter<std::string>("cam_model", "");
+  auto cam_calib_file = node->declare_parameter<std::string>("cam_calib_file", "");
+  auto cam_width = node->declare_parameter<long>("cam_width", 0);
+  auto cam_height = node->declare_parameter<long>("cam_height", 0);
+  auto cam_fx = node->declare_parameter<double>("cam_fx", 0.0);
+  auto cam_fy = node->declare_parameter<double>("cam_fy", 0.0);
+  auto cam_cx = node->declare_parameter<double>("cam_cx", 0.0);
+  auto cam_cy = node->declare_parameter<double>("cam_cy", 0.0);
+  auto cam_d0 = node->declare_parameter<double>("cam_d0", 0.0);
+  auto cam_d1 = node->declare_parameter<double>("cam_d1", 0.0);
+  auto cam_d2 = node->declare_parameter<double>("cam_d2", 0.0);
+  auto cam_d3 = node->declare_parameter<double>("cam_d3", 0.0);
+  
   if(cam_model == "Ocam")
   {
-    cam = new vk::OmniCamera(getParam<std::string>(ns+"/cam_calib_file", ""));
+    cam = new vk::OmniCamera(cam_calib_file);
   }
   else if(cam_model == "Pinhole")
   {
     cam = new vk::PinholeCamera(
-        getParam<int>(ns+"/cam_width"),
-        getParam<int>(ns+"/cam_height"),
-        getParam<double>(ns+"/cam_fx"),
-        getParam<double>(ns+"/cam_fy"),
-        getParam<double>(ns+"/cam_cx"),
-        getParam<double>(ns+"/cam_cy"),
-        getParam<double>(ns+"/cam_d0", 0.0),
-        getParam<double>(ns+"/cam_d1", 0.0),
-        getParam<double>(ns+"/cam_d2", 0.0),
-        getParam<double>(ns+"/cam_d3", 0.0));
+        static_cast<double>(cam_width),
+        static_cast<double>(cam_height),
+        cam_fx,
+        cam_fy,
+        cam_cx,
+        cam_cy,
+        cam_d0,
+        cam_d1,
+        cam_d2,
+        cam_d3);
   }
   else if(cam_model == "ATAN")
   {
     cam = new vk::ATANCamera(
-        getParam<int>(ns+"/cam_width"),
-        getParam<int>(ns+"/cam_height"),
-        getParam<double>(ns+"/cam_fx"),
-        getParam<double>(ns+"/cam_fy"),
-        getParam<double>(ns+"/cam_cx"),
-        getParam<double>(ns+"/cam_cy"),
-        getParam<double>(ns+"/cam_d0"));
+        static_cast<double>(cam_width),
+        static_cast<double>(cam_height),
+        cam_fx,
+        cam_fy,
+        cam_cx,
+        cam_cy,
+        cam_d0);
   }
   else
   {
-    cam = NULL;
+    cam = nullptr;
     res = false;
   }
   return res;
 }
 
-} // namespace camera_loader
-} // namespace vk
+} // namespace vk::camera_loader
 
 #endif // VIKIT_CAMERA_LOADER_H_

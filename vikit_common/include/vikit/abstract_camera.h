@@ -13,8 +13,8 @@
 namespace vk
 {
 
-using namespace std;
-using namespace Eigen;
+using namespace std;        // TODO remove
+using namespace Eigen;      // TODO remove
 
 class AbstractCamera
 {

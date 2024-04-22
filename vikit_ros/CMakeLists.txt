@@ -1,8 +1,7 @@
 set(PROJECT_NAME vikit_ros)
 cmake_minimum_required (VERSION 3.14)
 project(${PROJECT_NAME})
-set(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
-set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(CMAKE_BUILD_TYPE RelWithDebInfo) # Release, RelWithDebInfo, Debug
 
 # Set build flags
 set(CMAKE_CXX_FLAGS "-Wall -D_LINUX -D_REENTRANT -march=native -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
@@ -23,5 +22,8 @@ target_link_libraries(${PROJECT_NAME}
   Eigen3::Eigen
   ${OpenCV_LIBS}
   Sophus::Sophus)
+
+ament_auto_add_executable(test_camera
+  src/test_camera.cpp)
 
 ament_auto_package()
