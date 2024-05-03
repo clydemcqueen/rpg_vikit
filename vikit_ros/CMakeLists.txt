@@ -1,6 +1,5 @@
-set(PROJECT_NAME vikit_ros)
 cmake_minimum_required (VERSION 3.14)
-project(${PROJECT_NAME})
+project(vikit_ros)
 set(CMAKE_BUILD_TYPE RelWithDebInfo) # Release, RelWithDebInfo, Debug
 
 # Set build flags
@@ -15,10 +14,11 @@ find_package(OpenCV REQUIRED)
 find_package(Sophus REQUIRED)
 
 # Create vikit library
-ament_auto_add_library(${PROJECT_NAME} STATIC
+ament_auto_add_library(vikit_ros STATIC
+  src/camera_loader.cpp
   src/output_helper.cpp)
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(vikit_ros
   Eigen3::Eigen
   ${OpenCV_LIBS}
   Sophus::Sophus)

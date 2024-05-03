@@ -1,8 +1,7 @@
-set(PROJECT_NAME vikit_common)
 cmake_minimum_required (VERSION 3.14)
-project(${PROJECT_NAME})
+project(vikit_common)
 set(CMAKE_BUILD_TYPE RelWithDebInfo) # Release, RelWithDebInfo, Debug
-set(USE_ROS TRUE) # Set False if you want to build this package without Catkin
+set(USE_ROS TRUE)
 
 # Set build flags. Set IS_ARM on odroid board as environment variable
 set(CMAKE_CXX_FLAGS "-Wall -D_LINUX -D_REENTRANT -march=native -Wno-unused-variable -Wno-unused-but-set-variable -Wno-unknown-pragmas")
@@ -28,7 +27,7 @@ else()
 endif()
 
 # Create vikit library
-add_library(${PROJECT_NAME} STATIC
+add_library(vikit_common STATIC
   src/atan_camera.cpp
   src/omni_camera.cpp
   src/math_utils.cpp
@@ -45,7 +44,7 @@ if(USE_ROS)
   add_library(vikit_common::vikit_common ALIAS vikit_common)
 endif()
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(vikit_common
   PUBLIC
     Eigen3::Eigen
     ${OpenCV_LIBS}
@@ -53,18 +52,18 @@ target_link_libraries(${PROJECT_NAME}
 
 # Tests
 add_executable(test_vk_common_camera test/test_camera.cpp)
-target_link_libraries(test_vk_common_camera ${PROJECT_NAME})
+target_link_libraries(test_vk_common_camera vikit_common)
 
 add_executable(test_vk_common_triangulation test/test_triangulation.cpp)
-target_link_libraries(test_vk_common_triangulation ${PROJECT_NAME})
+target_link_libraries(test_vk_common_triangulation vikit_common)
 
 add_executable(test_vk_common_patch_score test/test_patch_score.cpp)
-target_link_libraries(test_vk_common_patch_score ${PROJECT_NAME})
+target_link_libraries(test_vk_common_patch_score vikit_common)
 
 ################################################################################
 # Create the vikit_commonConfig.cmake file for other cmake projects.
 if(USE_ROS)
-  install(TARGETS ${PROJECT_NAME} EXPORT vikit_common_targets INCLUDES DESTINATION include)
+  install(TARGETS vikit_common EXPORT vikit_common_targets INCLUDES DESTINATION include)
   install(DIRECTORY include/ DESTINATION include)  # Note trailing /
   ament_export_targets(vikit_common_targets)
   ament_export_dependencies(rclcpp)
@@ -73,7 +72,7 @@ else()
   # Temporary hack:
   cmake_policy(SET CMP0026 OLD)
 
-  get_target_property( FULL_LIBRARY_NAME ${PROJECT_NAME} LOCATION )
+  get_target_property( FULL_LIBRARY_NAME vikit_common LOCATION )
   set(vikit_common_LIBRARIES ${FULL_LIBRARY_NAME} )
   set(vikit_common_LIBRARY_DIR ${PROJECT_BINARY_DIR} )
   set(vikit_common_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
@@ -82,5 +81,5 @@ else()
   export(PACKAGE vikit_common)
 
   install(DIRECTORY include/vikit DESTINATION ${CMAKE_INSTALL_PREFIX}/include FILES_MATCHING PATTERN "*.h")
-  install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
+  install(TARGETS vikit_common DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
 endif()
