@@ -15,7 +15,7 @@ find_package(OpenCV REQUIRED)
 find_package(Sophus REQUIRED)
 
 # Create vikit library
-ament_auto_add_library(${PROJECT_NAME} SHARED
+ament_auto_add_library(${PROJECT_NAME} STATIC
   src/output_helper.cpp)
 
 target_link_libraries(${PROJECT_NAME}

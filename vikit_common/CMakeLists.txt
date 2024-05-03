@@ -28,7 +28,7 @@ else()
 endif()
 
 # Create vikit library
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME} STATIC
   src/atan_camera.cpp
   src/omni_camera.cpp
   src/math_utils.cpp
