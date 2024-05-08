@@ -5,6 +5,7 @@
  *      Author: chrigi
  */
 
+#include <utility>
 #include <vikit/output_helper.h>
 #include <geometry_msgs/msg/transform.hpp>
 
@@ -12,13 +13,13 @@ namespace vk::output_helper {
 
 void
 publishTfTransform(const Sophus::SE3d& T, const rclcpp::Time& stamp,
-                   const string& frame_id, const string& child_frame_id,
+                   std::string frame_id, std::string child_frame_id,
                    tf2_ros::TransformBroadcaster& br)
 {
   geometry_msgs::msg::TransformStamped transform_msg;
   transform_msg.header.stamp = stamp;
-  transform_msg.header.frame_id = frame_id;
-  transform_msg.child_frame_id = child_frame_id;
+  transform_msg.header.frame_id = std::move(frame_id);
+  transform_msg.child_frame_id = std::move(child_frame_id);
   Eigen::Quaterniond q(T.rotationMatrix());
   transform_msg.transform.translation.x = T.translation().x();
   transform_msg.transform.translation.y = T.translation().y();
@@ -32,8 +33,9 @@ publishTfTransform(const Sophus::SE3d& T, const rclcpp::Time& stamp,
 
 void
 publishPointMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                   std::string frame_id,
                    const Vector3d& pos,
-                   const string& ns,
+                   std::string ns,
                    const rclcpp::Time& timestamp,
                    int id,
                    int action,
@@ -42,9 +44,9 @@ publishPointMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Sha
                    const rclcpp::Duration& lifetime)
 {
   visualization_msgs::msg::Marker msg;
-  msg.header.frame_id = "/world";
+  msg.header.frame_id = std::move(frame_id);
   msg.header.stamp = timestamp;
-  msg.ns = ns;
+  msg.ns = std::move(ns);
   msg.id = id;
   msg.type = visualization_msgs::msg::Marker::CUBE;
   msg.action = action; // 0 = add/modify
@@ -64,9 +66,10 @@ publishPointMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Sha
 
 void
 publishLineMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                  std::string frame_id,
                   const Vector3d& start,
                   const Vector3d& end,
-                  const string& ns,
+                  std::string ns,
                   const rclcpp::Time& timestamp,
                   int id,
                   int action,
@@ -75,9 +78,9 @@ publishLineMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Shar
                   const rclcpp::Duration& lifetime)
 {
   visualization_msgs::msg::Marker msg;
-  msg.header.frame_id = "/world";
+  msg.header.frame_id = std::move(frame_id);
   msg.header.stamp = timestamp;
-  msg.ns = ns;
+  msg.ns = std::move(ns);
   msg.id = id;
   msg.type = visualization_msgs::msg::Marker::LINE_STRIP;
   msg.action = action; // 0 = add/modify
@@ -100,10 +103,11 @@ publishLineMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Shar
 
 void
 publishArrowMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                   std::string frame_id,
                    const Vector3d& pos,
                    const Vector3d& dir,
                    double scale,
-                   const string& ns,
+                   std::string ns,
                    const rclcpp::Time& timestamp,
                    int id,
                    int action,
@@ -111,9 +115,9 @@ publishArrowMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Sha
                    const Vector3d& color)
 {
   visualization_msgs::msg::Marker msg;
-  msg.header.frame_id = "/world";
+  msg.header.frame_id = std::move(frame_id);
   msg.header.stamp = timestamp;
-  msg.ns = ns;
+  msg.ns = std::move(ns);
   msg.id = id;
   msg.type = visualization_msgs::msg::Marker::ARROW;
   msg.action = action; // 0 = add/modify
@@ -136,8 +140,8 @@ publishArrowMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Sha
 
 void
 publishHexacopterMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
-                        const string& frame_id,
-                        const string& ns,
+                        std::string frame_id,
+                        std::string ns,
                         const rclcpp::Time& timestamp,
                         int id,
                         int action,
@@ -153,9 +157,9 @@ publishHexacopterMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>
   visualization_msgs::msg::Marker marker;
 
   // the marker will be displayed in frame_id
-  marker.header.frame_id = frame_id;
+  marker.header.frame_id = std::move(frame_id);
   marker.header.stamp = timestamp;
-  marker.ns = ns;
+  marker.ns = std::move(ns);
   marker.action = 0;
   marker.id = id;
 
@@ -238,8 +242,8 @@ publishHexacopterMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>
 
 void
 publishCameraMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
-                    const string& frame_id,
-                    const string& ns,
+                    std::string frame_id,
+                    std::string ns,
                     const rclcpp::Time& timestamp,
                     int id,
                     double marker_scale,
@@ -253,9 +257,9 @@ publishCameraMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Sh
   visualization_msgs::msg::Marker marker;
 
   // the marker will be displayed in frame_id
-  marker.header.frame_id = frame_id;
+  marker.header.frame_id = std::move(frame_id);
   marker.header.stamp = timestamp;
-  marker.ns = ns;
+  marker.ns = std::move(ns);
   marker.action = 0;
   marker.id = id;
 
@@ -342,9 +346,10 @@ publishCameraMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::Sh
 }
 
 void publishFrameMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                        std::string frame_id,
                         const Matrix3d& rot,
                         const Vector3d& pos,
-                        const string& ns,
+                        std::string ns,
                         const rclcpp::Time& timestamp,
                         int id,
                         int action,
@@ -352,9 +357,9 @@ void publishFrameMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>
                         const rclcpp::Duration& lifetime)
 {
   visualization_msgs::msg::Marker marker;
-  marker.header.frame_id = "/world";
+  marker.header.frame_id = std::move(frame_id);
   marker.header.stamp = timestamp;
-  marker.ns = ns;
+  marker.ns = std::move(ns);
   marker.id = id++;
   marker.type = visualization_msgs::msg::Marker::ARROW;
   marker.action = action; // 0 = add/modify

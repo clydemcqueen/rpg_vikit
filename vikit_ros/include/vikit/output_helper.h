@@ -22,13 +22,14 @@ using namespace Eigen;      // TODO remove
 
 void
 publishTfTransform      (const Sophus::SE3d& T, const rclcpp::Time& stamp,
-                         const string& frame_id, const string& child_frame_id,
+                         std::string frame_id, std::string child_frame_id,
                          tf2_ros::TransformBroadcaster& br);
 
 void
 publishPointMarker      (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                         std::string frame_id,
                          const Vector3d& pos,
-                         const string& ns,
+                         std::string ns,
                          const rclcpp::Time& timestamp,
                          int id,
                          int action,
@@ -38,9 +39,10 @@ publishPointMarker      (const rclcpp::Publisher<visualization_msgs::msg::Marker
 
 void
 publishLineMarker       (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                         std::string frame_id,
                          const Vector3d& start,
                          const Vector3d& end,
-                         const string& ns,
+                         std::string ns,
                          const rclcpp::Time& timestamp,
                          int id,
                          int action,
@@ -50,10 +52,11 @@ publishLineMarker       (const rclcpp::Publisher<visualization_msgs::msg::Marker
 
 void
 publishArrowMarker      (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                         std::string frame_id,
                          const Vector3d& pos,
                          const Vector3d& dir,
                          double scale,
-                         const string& ns,
+                         std::string ns,
                          const rclcpp::Time& timestamp,
                          int id,
                          int action,
@@ -62,8 +65,8 @@ publishArrowMarker      (const rclcpp::Publisher<visualization_msgs::msg::Marker
 
 void
 publishHexacopterMarker (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
-                         const string& frame_id,
-                         const string& ns,
+                         std::string frame_id,
+                         std::string ns,
                          const rclcpp::Time& timestamp,
                          int id,
                          int action,
@@ -72,17 +75,18 @@ publishHexacopterMarker (const rclcpp::Publisher<visualization_msgs::msg::Marker
 
 void
 publishCameraMarker(const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
-                    const string& frame_id,
-                    const string& ns,
+                    std::string frame_id,
+                    std::string ns,
                     const rclcpp::Time& timestamp,
                     int id,
                     double marker_scale,
                     const Vector3d& color);
 void
 publishFrameMarker     (const rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr& pub,
+                        std::string frame_id,
                         const Matrix3d& rot,
                         const Vector3d& pos,
-                        const string& ns,
+                        std::string ns,
                         const rclcpp::Time& timestamp,
                         int id,
                         int action,
